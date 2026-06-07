@@ -416,7 +416,7 @@ export default function AdminPortal({
             </button>
           </form>
           <div className="mt-6 pt-4 border-t border-dashed border-stone-200 text-center text-xs text-stone-400">
-            Secure admin connection. Only authorized managers allowed. Password is 'Bri@12JesH'.
+           
           </div>
         </div>
       </div>
