@@ -541,7 +541,7 @@ app.post("/api/upload", upload.any(), async (req, res) => {
     console.error("ImageKit upload error:", err);
     // Cleanup on error
     if (file && file.path && fs.existsSync(file.path)) {
-      try { fs.unlinkSync(file.path); } catch (e) {}
+      try { fs.unlinkSync(file.path); } catch (e) { }
     }
     return res.status(500).json({ error: err.message || "ImageKit upload failed" });
   }
@@ -584,7 +584,7 @@ app.post("/api/upload-bulk", upload.any(), async (req, res) => {
     // Cleanup any remaining files on error
     for (const file of files) {
       if (file.path && fs.existsSync(file.path)) {
-        try { fs.unlinkSync(file.path); } catch (e) {}
+        try { fs.unlinkSync(file.path); } catch (e) { }
       }
     }
     return res.status(500).json({ error: err.message || "ImageKit bulk upload failed" });

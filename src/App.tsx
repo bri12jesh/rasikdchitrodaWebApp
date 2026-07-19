@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useLocation, Link, Routes, Route } from "react-router-dom";
 import gsap from "gsap";
 import { 
   Menu, X, Phone, Mail, MapPin, Award, ShieldAlert, CheckCircle, 
@@ -19,7 +20,16 @@ import Home from "./components/Home";
 
 export default function App() {
   // Navigation State
-  const [currentTab, setCurrentTab] = useState<"home" | "products" | "projects" | "about" | "contact" | "admin">("home");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const pathPart = location.pathname.split("/")[1];
+  const currentTab = (pathPart === "" ? "home" : pathPart) as "home" | "products" | "projects" | "about" | "contact" | "admin";
+
+  const setCurrentTab = (tab: "home" | "products" | "projects" | "about" | "contact" | "admin") => {
+    if (tab === "home") navigate("/");
+    else navigate(`/${tab}`);
+  };
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Selected Detail Item state
@@ -239,9 +249,9 @@ export default function App() {
                 { label: "About", id: "about" },
                 { label: "Contact", id: "contact" }
               ].map((tab) => (
-                <button
+                <Link
                   key={tab.id}
-                  onClick={() => setCurrentTab(tab.id as any)}
+                  to={tab.id === "home" ? "/" : `/${tab.id}`}
                   className={`text-xs font-semibold tracking-wider uppercase transition-colors duration-200 py-2 border-b-2 hover:text-[#A67C52] ${
                     currentTab === tab.id 
                       ? "border-[#A67C52] text-[#1A1A1A]" 
@@ -249,7 +259,7 @@ export default function App() {
                   }`}
                 >
                   {tab.label}
-                </button>
+                </Link>
               ))}
 
               {adminToken && (
@@ -289,29 +299,27 @@ export default function App() {
         {mobileMenuOpen && (
           <div className="lg:hidden bg-white border-b border-[#E5E1D9] py-4 px-6 space-y-3 shadow-lg absolute w-full left-0">
             {[
-              { label: "Home", id: "home" },
-              { label: "Products", id: "products" },
-              { label: "Projects", id: "projects" },
-              { label: "About", id: "about" },
-              { label: "Contact", id: "contact" }
+              { label: "Home", id: "home", path: "/" },
+              { label: "Products", id: "products", path: "/products" },
+              { label: "Projects", id: "projects", path: "/projects" },
+              { label: "About", id: "about", path: "/about" },
+              { label: "Contact", id: "contact", path: "/contact" }
             ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setCurrentTab(tab.id as any);
-                  setMobileMenuOpen(false);
-                }}
-                className={`w-full text-left font-bold text-sm uppercase py-2 block ${
-                  currentTab === tab.id ? "text-[#A67C52]" : "text-stone-700"
-                }`}
-              >
-                {tab.label}
-              </button>
+                <Link
+                  key={tab.id}
+                  to={tab.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`w-full text-left font-bold text-sm uppercase py-2 block ${
+                    currentTab === tab.id ? "text-[#A67C52]" : "text-stone-700"
+                  }`}
+                >
+                  {tab.label}
+                </Link>
             ))}
             {adminToken && (
               <button
                 onClick={() => {
-                  setCurrentTab("admin");
+                  navigate("/admin");
                   setMobileMenuOpen(false);
                 }}
                 className="w-full text-left font-bold text-sm uppercase text-emerald-700 py-2 block"
@@ -866,11 +874,11 @@ export default function App() {
           <div className="md:col-span-3 space-y-3">
             <h4 className="text-xs uppercase text-[#A67C52] tracking-widest font-bold">Quick Links</h4>
             <div className="grid grid-cols-1 gap-2 text-xs text-stone-400 font-medium">
-              <button onClick={() => { setCurrentTab("home"); setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer">Home</button>
-              <button onClick={() => { setCurrentTab("products"); setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer">Products</button>
-              <button onClick={() => { setCurrentTab("projects"); setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer">Projects</button>
-              <button onClick={() => { setCurrentTab("about"); setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer">About Us</button>
-              <button onClick={() => { setCurrentTab("contact"); setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer">Contact</button>
+              <Link to="/" onClick={() => { setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer block">Home</Link>
+              <Link to="/products" onClick={() => { setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer block">Products</Link>
+              <Link to="/projects" onClick={() => { setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer block">Projects</Link>
+              <Link to="/about" onClick={() => { setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer block">About Us</Link>
+              <Link to="/contact" onClick={() => { setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer block">Contact</Link>
             </div>
           </div>
 
