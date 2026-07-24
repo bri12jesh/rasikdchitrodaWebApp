@@ -133,7 +133,7 @@ export default function Home({
           
           <div className="grid grid-cols-3 gap-6 pt-8 border-t border-[#E5E1D9]/70 max-w-lg mx-auto font-serif">
             <div className="border-r border-[#E5E1D9]/70 last:border-0 pr-2">
-              <span className="block text-3xl sm:text-4xl font-extrabold text-[#A67C52]">15+</span>
+              <span className="block text-3xl sm:text-4xl font-extrabold text-[#A67C52]">10+</span>
               <span className="text-[9px] uppercase font-bold text-stone-500 tracking-wider block mt-1 font-sans">Years Experience</span>
             </div>
             <div className="border-r border-[#E5E1D9]/70 last:border-0 px-2">

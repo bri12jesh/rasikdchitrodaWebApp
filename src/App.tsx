@@ -640,7 +640,7 @@ export default function App() {
                 </p>
                 <div className="flex space-x-6 pt-4 text-center">
                   <div>
-                    <span className="text-3xl font-bold text-[#A67C52] font-serif block">15+</span>
+                    <span className="text-3xl font-bold text-[#A67C52] font-serif block">10+</span>
                     <span className="text-[10px] text-stone-500 uppercase tracking-wider font-semibold font-sans">Years in Gujarat</span>
                   </div>
                   <div>
