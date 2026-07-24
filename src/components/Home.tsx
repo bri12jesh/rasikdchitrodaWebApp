@@ -100,7 +100,7 @@ export default function Home({
           </h1>
           
           <p className="text-stone-300 text-xs sm:text-sm max-w-xl mx-auto font-sans font-light leading-relaxed">
-            Gujarat's premier manufacturer and government tender specialist of robust <strong>School Benches</strong>, premium <strong>Office Furniture</strong>, modern <strong>Hospital Furniture</strong>, and precision-engineered <strong>School Furniture</strong> since 2008.
+            Gujarat's premier manufacturer and government tender specialist of robust <strong>School Benches</strong>, premium <strong>Office Furniture</strong>, modern <strong>Hospital Furniture</strong>, and precision-engineered <strong>School Furniture</strong> since 2016.
           </p>
 
           <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -123,9 +123,9 @@ export default function Home({
       {/* 2. STATS BREADCRUMB / PERFORMANCE MATRIX */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white border border-[#E5E1D9] rounded p-8 sm:p-14 text-center space-y-6 max-w-3xl mx-auto shadow-sm">
-          <span className="text-[#A67C52] text-xs font-extrabold tracking-widest uppercase block">No 1 Furniture in Gujarat since 2008</span>
+          <span className="text-[#A67C52] text-xs font-extrabold tracking-widest uppercase block">No 1 Furniture in Gujarat since 2016</span>
           <h2 className="text-3.5xl sm:text-4xl font-serif text-[#1A1A1A] tracking-tight font-bold">
-            15 Years of Excellence & Best Furniture Solutions
+            10 Years of Excellence & Best Furniture Solutions
           </h2>
           <p className="text-stone-600 text-xs sm:text-sm leading-relaxed max-w-2.5xl mx-auto font-sans font-light">
             Rasik D Chitroda stands as a beacon of premium architectural reliability in Gujarat's state manufacturing grid. We specialize in robust, double-capacity <strong>School Benches</strong>, ergonomic <strong>Office Furniture</strong>, modern healthcare-grade <strong>Hospital Furniture</strong>, and state-of-the-art academic <strong>School Furniture</strong>. Our certified factory guarantees compliant layouts and luxury woodwork for spaces across Ahmedabad, Gandhinagar, and active state sectors.

@@ -236,7 +236,7 @@ export default function App() {
                 Rasik D Chitroda
               </span>
               <span className="text-[9px] tracking-widest uppercase text-[#A67C52] block mt-1 font-semibold">
-                Leading Furniture Manufacturer Since 2008
+                Leading Furniture Manufacturer Since 2016
               </span>
             </div>
 
@@ -621,7 +621,7 @@ export default function App() {
             <div className="space-y-4 text-center">
               <span className="text-[#A67C52] text-xs font-bold tracking-widest uppercase block">No 1 Furniture Brand in Gujarat</span>
               <h1 className="text-4xl sm:text-5xl font-serif text-[#1A1A1A] tracking-tight leading-tight">
-                Crafting the Best Furniture Since 2008
+                Crafting the Best Furniture Since 2016
               </h1>
               <p className="text-stone-600 text-xs sm:text-sm max-w-xl mx-auto font-sans font-light leading-relaxed">
                 Learn how Rasik D Chitroda established Gujarat's premier commercial tender supplier of robust School Benches, School Furniture, Office Furniture, Hospital Furniture, and luxury Interior designs.
@@ -862,11 +862,11 @@ export default function App() {
               Rasik D Chitroda
             </span>
             <p className="text-xs text-stone-400 leading-relaxed max-w-md font-sans font-light">
-              Gujarat's most trusted furniture manufacturer. Crafting monumental, reliable, and precise furniture for government and private sectors since 2008.
+              Gujarat's most trusted furniture manufacturer. Crafting monumental, reliable, and precise furniture for government and private sectors since 2016.
             </p>
             <div className="flex items-center space-x-2 text-[10px] text-stone-500 font-mono">
               <span className="h-1.5 w-1.5 bg-emerald-500 rounded-full"></span>
-              <span>ESTD 2008 • VERIFIED GUJARAT SUPPLIER TENDER</span>
+              <span>ESTD 2016 • VERIFIED GUJARAT SUPPLIER TENDER</span>
             </div>
           </div>
 
