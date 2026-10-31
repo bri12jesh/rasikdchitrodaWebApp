@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ArrowLeft, User, MapPin, Calendar, Briefcase, Award, X, ZoomIn } from "lucide-react";
 import { Project } from "../types";
+import SEO from "./SEO";
 
 interface ProjectDetailProps {
   project: Project;
@@ -12,8 +13,59 @@ export default function ProjectDetail({ project, onBack }: ProjectDetailProps) {
   
   const galleryImages = Array.isArray(project.gallery_urls) ? project.gallery_urls : [];
 
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": project.title,
+    "image": project.image_url,
+    "description": project.description,
+    "author": {
+      "@type": "Organization",
+      "name": "Rasik D Chitroda Furniture"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Rasik D Chitroda Furniture"
+    },
+    "datePublished": `${project.completed_year || 2024}-01-01`
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://officefurnitureonline.in/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Projects",
+        "item": "https://officefurnitureonline.in/projects"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": project.title,
+        "item": `https://officefurnitureonline.in/projects/${project.id}`
+      }
+    ]
+  };
+
   return (
     <div className="w-full">
+      <SEO
+        title={`${project.title} - Work Portfolio`}
+        description={`${project.title} (${project.completed_year}) executed in ${project.location} for ${project.client}. ${project.description?.slice(0, 130)}`}
+        canonical={`/projects/${project.id}`}
+        ogImage={project.image_url}
+        ogType="article"
+        keywords={`${project.title}, ${project.category}, ${project.contract_type}, ${project.location}, Gujarat Furniture Tender, Rasik D Chitroda`}
+        schema={[articleSchema, breadcrumbSchema]}
+      />
       
       {/* Top Atmos Backing Banner Section with floating back button */}
       <div className="relative h-[480px] w-full overflow-hidden">

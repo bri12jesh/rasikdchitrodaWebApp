@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ArrowLeft, Check, Phone, FileText, Send, X } from "lucide-react";
 import { Product } from "../types";
+import SEO from "./SEO";
 
 interface ProductDetailProps {
   product: Product;
@@ -57,8 +58,67 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
     }, 1500);
   };
 
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.title,
+    "image": product.image_url,
+    "description": product.description,
+    "category": product.category,
+    "brand": {
+      "@type": "Brand",
+      "name": "Rasik D Chitroda"
+    },
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": "INR",
+      "lowPrice": product.price_min || 1000,
+      "highPrice": product.price_max || 50000,
+      "price": product.price_min || 1000,
+      "availability": "https://schema.org/InStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "Rasik D Chitroda Furniture"
+      }
+    }
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://officefurnitureonline.in/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Products",
+        "item": "https://officefurnitureonline.in/products"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": product.title,
+        "item": `https://officefurnitureonline.in/products/${product.id}`
+      }
+    ]
+  };
+
   return (
     <div className="py-8 max-w-6xl mx-auto px-4 sm:px-6">
+      <SEO
+        title={`${product.title} - Gujarat School & Office Furniture`}
+        description={product.description?.slice(0, 160) || `Buy ${product.title} manufactured by Rasik D Chitroda. Commercial grade furniture for schools, hospitals, and offices in Gujarat.`}
+        canonical={`/products/${product.id}`}
+        ogImage={product.image_url}
+        ogType="product"
+        keywords={`${product.title}, ${product.category}, School Benches Gujarat, Office Furniture Ahmedabad, Tender Furniture`}
+        schema={[productSchema, breadcrumbSchema]}
+      />
       
       {/* Breadcrumb Navigation matching the editorial design */}
       <nav className="text-xs text-stone-500 mb-8 flex items-center space-x-2 tracking-widest uppercase font-semibold">

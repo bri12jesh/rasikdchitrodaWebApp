@@ -186,13 +186,65 @@ initDatabase();
 
 // --- API ENDPOINTS ---
 
-// Dynamic SEO Friendly XML Sitemap generator matching current preview/deployment host
-app.get("/sitemap.xml", (req, res) => {
-  const host = req.get("host") || "rasik-chitroda-furniture.com";
-  // Determine protocol (supporting cloud proxy SSL)
+// Helper functions to fetch products and projects for SEO, Sitemaps, and bots
+async function getProductsList(): Promise<any[]> {
+  try {
+    if (isUsingFallback || !pool) {
+      return fallbackDB.products || [];
+    }
+    const result = await pool.query("SELECT * FROM products ORDER BY id DESC");
+    return result.rows || [];
+  } catch (err) {
+    return fallbackDB.products || [];
+  }
+}
+
+async function getProjectsList(): Promise<any[]> {
+  try {
+    if (isUsingFallback || !pool) {
+      return fallbackDB.projects || [];
+    }
+    const result = await pool.query("SELECT * FROM projects ORDER BY id DESC");
+    return result.rows || [];
+  } catch (err) {
+    return fallbackDB.projects || [];
+  }
+}
+
+function escapeHtml(str: string): string {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// Dynamic SEO Friendly XML Sitemap generator including all products and projects
+app.get("/sitemap.xml", async (req, res) => {
+  const host = req.get("host") || "officefurnitureonline.in";
   const isSecure = req.secure || req.headers["x-forwarded-proto"] === "https";
   const protocol = isSecure ? "https" : "http";
   const baseUrl = `${protocol}://${host}`;
+  const today = new Date().toISOString().split("T")[0];
+
+  const productsList = await getProductsList();
+  const projectsList = await getProjectsList();
+
+  const productUrls = productsList.map(p => `  <url>
+    <loc>${baseUrl}/products/${p.id}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`).join("\n");
+
+  const projectUrls = projectsList.map(pj => `  <url>
+    <loc>${baseUrl}/projects/${pj.id}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>`).join("\n");
 
   res.header("Content-Type", "application/xml");
   res.send(`<?xml version="1.0" encoding="UTF-8"?>
@@ -200,34 +252,36 @@ app.get("/sitemap.xml", (req, res) => {
   <!-- Dynamic Sitemaps generated on-the-fly for Rasik D Chitroda Furniture -->
   <url>
     <loc>${baseUrl}/</loc>
-    <lastmod>2026-06-04</lastmod>
+    <lastmod>${today}</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>${baseUrl}/#products</loc>
-    <lastmod>2026-06-04</lastmod>
+    <loc>${baseUrl}/products</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>${baseUrl}/#projects</loc>
-    <lastmod>2026-06-04</lastmod>
+    <loc>${baseUrl}/projects</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>${baseUrl}/#about</loc>
-    <lastmod>2026-06-04</lastmod>
+    <loc>${baseUrl}/about</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>${baseUrl}/#contact</loc>
-    <lastmod>2026-06-04</lastmod>
+    <loc>${baseUrl}/contact</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
+${productUrls}
+${projectUrls}
 </urlset>`);
 });
 
@@ -603,8 +657,62 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
+
+    // Dynamic Server-Side Meta Injection for Social bots & Search scrapers (WhatsApp, LinkedIn, Twitter, Googlebot)
+    app.get("*", async (req, res) => {
+      const indexPath = path.join(distPath, "index.html");
+      if (!fs.existsSync(indexPath)) {
+        return res.status(404).send("Application not built. Please run npm run build.");
+      }
+
+      let html = fs.readFileSync(indexPath, "utf-8");
+      const host = req.get("host") || "officefurnitureonline.in";
+      const isSecure = req.secure || req.headers["x-forwarded-proto"] === "https";
+      const protocol = isSecure ? "https" : "http";
+      const baseUrl = `${protocol}://${host}`;
+
+      const productMatch = req.path.match(/^\/products\/(\d+)$/);
+      const projectMatch = req.path.match(/^\/projects\/(\d+)$/);
+
+      if (productMatch) {
+        const productId = productMatch[1];
+        const productsList = await getProductsList();
+        const product = productsList.find(p => String(p.id) === productId);
+        if (product) {
+          const title = `${escapeHtml(product.title)} | Rasik D Chitroda Furniture Gujarat`;
+          const desc = escapeHtml(product.description ? product.description.slice(0, 160) : `Buy ${product.title} manufactured by Rasik D Chitroda in Gujarat.`);
+          const img = product.image_url || `${baseUrl}/og-default.jpg`;
+          const canonical = `${baseUrl}/products/${product.id}`;
+
+          html = html.replace(/<title>.*?<\/title>/, `<title>${title}</title>`);
+          html = html.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+          html = html.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
+          html = html.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
+          html = html.replace(/<meta property="og:image" content=".*?" \/>/, `<meta property="og:image" content="${img}" />`);
+          html = html.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
+          html = html.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
+        }
+      } else if (projectMatch) {
+        const projectId = projectMatch[1];
+        const projectsList = await getProjectsList();
+        const project = projectsList.find(pj => String(pj.id) === projectId);
+        if (project) {
+          const title = `${escapeHtml(project.title)} - Work Portfolio | Rasik D Chitroda`;
+          const desc = escapeHtml(`${project.title} (${project.completed_year}) executed in ${project.location} for ${project.client}.`);
+          const img = project.image_url || `${baseUrl}/og-default.jpg`;
+          const canonical = `${baseUrl}/projects/${project.id}`;
+
+          html = html.replace(/<title>.*?<\/title>/, `<title>${title}</title>`);
+          html = html.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${desc}" />`);
+          html = html.replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`);
+          html = html.replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${desc}" />`);
+          html = html.replace(/<meta property="og:image" content=".*?" \/>/, `<meta property="og:image" content="${img}" />`);
+          html = html.replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${canonical}" />`);
+          html = html.replace(/<link rel="canonical" href=".*?" \/>/, `<link rel="canonical" href="${canonical}" />`);
+        }
+      }
+
+      res.send(html);
     });
   }
 

@@ -17,13 +17,15 @@ import ProductDetail from "./components/ProductDetail";
 import ProjectDetail from "./components/ProjectDetail";
 import AdminPortal from "./components/AdminPortal";
 import Home from "./components/Home";
+import SEO from "./components/SEO";
 
 export default function App() {
-  // Navigation State
+  // Navigation State derived from URL
   const navigate = useNavigate();
   const location = useLocation();
-  const pathPart = location.pathname.split("/")[1];
-  const currentTab = (pathPart === "" ? "home" : pathPart) as "home" | "products" | "projects" | "about" | "contact" | "admin";
+  const pathSegments = location.pathname.split("/").filter(Boolean);
+  const currentTab = (pathSegments[0] || "home") as "home" | "products" | "projects" | "about" | "contact" | "admin";
+  const subId = pathSegments[1];
 
   const setCurrentTab = (tab: "home" | "products" | "projects" | "about" | "contact" | "admin") => {
     if (tab === "home") navigate("/");
@@ -32,14 +34,19 @@ export default function App() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Selected Detail Item state
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-
   // Database State
   const [products, setProducts] = useState<Product[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Selected Detail Item derived from URL route
+  const selectedProduct = (currentTab === "products" && subId)
+    ? (products.find(p => String(p.id) === subId) || null)
+    : null;
+
+  const selectedProject = (currentTab === "projects" && subId)
+    ? (projects.find(pj => String(pj.id) === subId) || null)
+    : null;
 
   // Admin Session Token (in localStorage for convenience)
   const [adminToken, setAdminToken] = useState<string | null>(() => {
@@ -115,12 +122,8 @@ export default function App() {
     }
   }, []);
 
-  // Animate on Tab selection shift
+  // Animate on route change
   useEffect(() => {
-    // Reset selected items on tab navigations
-    setSelectedProduct(null);
-    setSelectedProject(null);
-    
     if (containerRef.current) {
       // Clean slide upwards opacity fade
       gsap.fromTo(
@@ -132,7 +135,7 @@ export default function App() {
     
     // Smooth scroll back to top on transitions
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [currentTab]);
+  }, [location.pathname]);
 
   // Product categories list
   const productCategories = [
@@ -344,19 +347,25 @@ export default function App() {
       <main ref={containerRef} className="flex-grow">
         
         {/* VIEW 1: HOME VIEW */}
-        {currentTab === "home" && !selectedProduct && !selectedProject && (
+        {currentTab === "home" && (
           <Home
             products={products}
             projects={projects}
             onNavigate={setCurrentTab}
-            onSelectProduct={setSelectedProduct}
-            onSelectProject={setSelectedProject}
+            onSelectProduct={(p) => navigate(`/products/${p.id}`)}
+            onSelectProject={(pj) => navigate(`/projects/${pj.id}`)}
           />
         )}
 
         {/* VIEW 2: PRODUCTS CATALOG (SCREENSHOTS 8, 9, 10) */}
-        {currentTab === "products" && !selectedProduct && (
+        {currentTab === "products" && !subId && (
           <div className="space-y-12">
+            <SEO
+              title="Products & Collections | School Benches, Office & Hospital Furniture Gujarat"
+              description="Explore precision-engineered furniture built for permanence. High-strength double-seater School Benches, ergonomic Office Furniture, and clinic-grade Hospital Furniture in Ahmedabad & Gandhinagar."
+              canonical="/products"
+              keywords="School Benches Gujarat, School Furniture, Hospital Furniture Ahmedabad, Office Furniture, Laboratory Furniture"
+            />
             
             {/* Catalog Banner Headers - Matches Screenshot 9 */}
             <div className="bg-[#1A1A1A] text-white py-16 text-center shadow-inner relative overflow-hidden">
@@ -421,7 +430,7 @@ export default function App() {
                 {filteredProducts.map((p) => (
                   <div
                     key={p.id}
-                    onClick={() => setSelectedProduct(p)}
+                    onClick={() => navigate(`/products/${p.id}`)}
                     className="group cursor-pointer bg-white border border-[#E5E1D9] rounded overflow-hidden shadow-sm hover:shadow-md transition-all duration-200"
                   >
                     <div className="relative aspect-square w-full bg-stone-50 overflow-hidden border-b flex items-center justify-center">
@@ -496,8 +505,14 @@ export default function App() {
         )}
 
         {/* VIEW 3: PROJECTS / WORK PORTFOLIO (SCREENSHOTS 4, 3) */}
-        {currentTab === "projects" && !selectedProject && (
+        {currentTab === "projects" && !subId && (
           <div className="space-y-12 py-12">
+            <SEO
+              title="Our Work Portfolio & Government Tenders | Rasik D Chitroda Furniture"
+              description="A showcase of monumental craftsmanship across Gujarat. From state government education tenders to luxury private hotels and healthcare facilities since 2016."
+              canonical="/projects"
+              keywords="Gujarat Government Furniture Tenders, School Bench Tender, Hospital Furniture Projects, Office Furnishing Ahmedabad"
+            />
             
             {/* Majestic Title block - Matches Screenshot 4 */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
@@ -559,7 +574,7 @@ export default function App() {
                 {filteredProjects.map((pj) => (
                   <div
                     key={pj.id}
-                    onClick={() => setSelectedProject(pj)}
+                    onClick={() => navigate(`/projects/${pj.id}`)}
                     className="group cursor-pointer bg-white border border-[#E5E1D9] rounded overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
                   >
                     <div className="relative h-64 w-full overflow-hidden bg-stone-100">
@@ -616,6 +631,12 @@ export default function App() {
         {/* VIEW 4: ABOUT PAGE */}
         {currentTab === "about" && (
           <div className="space-y-16 py-12 max-w-5xl mx-auto px-4 sm:px-6">
+            <SEO
+              title="About Us | Leading Furniture Manufacturer & Interior Contractor Gujarat"
+              description="Discover our heritage since 2016. 50+ master artisans crafting heavy-duty teak wood school benches and institutional furniture in Nana Chiloda, Ahmedabad."
+              canonical="/about"
+              keywords="About Rasik D Chitroda, Furniture Manufacturer Gujarat, Nana Chiloda Ahmedabad, Teak Wood Joinery, Institutional Furniture"
+            />
             
             {/* Header intro */}
             <div className="space-y-4 text-center">
@@ -697,6 +718,12 @@ export default function App() {
         {/* VIEW 5: CONTACT & CONSULTATION INQUIRY */}
         {currentTab === "contact" && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+            <SEO
+              title="Contact Us & Request a Quote | Rasik D Chitroda Furniture Ahmedabad"
+              description="Discuss custom sizes and competitive bidding for heavy-duty School Benches, modern School Furniture, premium Office Furniture, and Hospital Furniture in Gujarat. Call +91 96386 16995."
+              canonical="/contact"
+              keywords="Contact Rasik D Chitroda, Furniture Quote Ahmedabad, School Bench Inquiry Gujarat, Hospital Furniture Tender Bid"
+            />
             
             {/* Header intro */}
             <div className="space-y-3 text-center max-w-2xl mx-auto">
@@ -824,30 +851,71 @@ export default function App() {
         )}
 
         {/* VIEW 6: DETAILED EXPANDED PRODUCT STATE */}
-        {selectedProduct && (
-          <ProductDetail
-            product={selectedProduct}
-            onBack={() => setSelectedProduct(null)}
-          />
+        {currentTab === "products" && subId && (
+          selectedProduct ? (
+            <ProductDetail
+              product={selectedProduct}
+              onBack={() => navigate("/products")}
+            />
+          ) : loading ? (
+            <div className="py-24 text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#A67C52]"></div>
+              <p className="mt-4 text-xs font-semibold text-stone-500 uppercase tracking-widest">Loading Product...</p>
+            </div>
+          ) : (
+            <div className="max-w-xl mx-auto py-24 px-4 text-center space-y-4">
+              <SEO title="Product Not Found" noindex={true} />
+              <h2 className="text-2xl font-serif font-bold text-stone-800">Product Not Found</h2>
+              <p className="text-xs text-stone-500">The product you are looking for does not exist or may have been removed.</p>
+              <button
+                onClick={() => navigate("/products")}
+                className="inline-block bg-[#1A1A1A] hover:bg-[#A67C52] text-white text-xs font-bold uppercase tracking-wider py-3 px-6 rounded transition cursor-pointer"
+              >
+                Back to Products Catalog
+              </button>
+            </div>
+          )
         )}
 
         {/* VIEW 7: DETAILED EXPANDED PROJECT STATE */}
-        {selectedProject && (
-          <ProjectDetail
-            project={selectedProject}
-            onBack={() => setSelectedProject(null)}
-          />
+        {currentTab === "projects" && subId && (
+          selectedProject ? (
+            <ProjectDetail
+              project={selectedProject}
+              onBack={() => navigate("/projects")}
+            />
+          ) : loading ? (
+            <div className="py-24 text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#A67C52]"></div>
+              <p className="mt-4 text-xs font-semibold text-stone-500 uppercase tracking-widest">Loading Project Case Study...</p>
+            </div>
+          ) : (
+            <div className="max-w-xl mx-auto py-24 px-4 text-center space-y-4">
+              <SEO title="Project Not Found" noindex={true} />
+              <h2 className="text-2xl font-serif font-bold text-stone-800">Project Not Found</h2>
+              <p className="text-xs text-stone-500">The project case study you are looking for does not exist or may have been removed.</p>
+              <button
+                onClick={() => navigate("/projects")}
+                className="inline-block bg-[#1A1A1A] hover:bg-[#A67C52] text-white text-xs font-bold uppercase tracking-wider py-3 px-6 rounded transition cursor-pointer"
+              >
+                Back to Work Portfolio
+              </button>
+            </div>
+          )
         )}
 
         {/* VIEW 8: ADMIN WORKSPACE CONSOLE */}
         {currentTab === "admin" && (
-          <AdminPortal
-            token={adminToken}
-            onSessionChange={handleAdminSessionChange}
-            onRefreshData={fetchData}
-            products={products}
-            projects={projects}
-          />
+          <>
+            <SEO title="Admin Console" noindex={true} />
+            <AdminPortal
+              token={adminToken}
+              onSessionChange={handleAdminSessionChange}
+              onRefreshData={fetchData}
+              products={products}
+              projects={projects}
+            />
+          </>
         )}
 
       </main>
@@ -874,11 +942,11 @@ export default function App() {
           <div className="md:col-span-3 space-y-3">
             <h4 className="text-xs uppercase text-[#A67C52] tracking-widest font-bold">Quick Links</h4>
             <div className="grid grid-cols-1 gap-2 text-xs text-stone-400 font-medium">
-              <Link to="/" onClick={() => { setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer block">Home</Link>
-              <Link to="/products" onClick={() => { setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer block">Products</Link>
-              <Link to="/projects" onClick={() => { setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer block">Projects</Link>
-              <Link to="/about" onClick={() => { setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer block">About Us</Link>
-              <Link to="/contact" onClick={() => { setSelectedProduct(null); setSelectedProject(null); }} className="text-left hover:text-white transition duration-150 cursor-pointer block">Contact</Link>
+              <Link to="/" className="text-left hover:text-white transition duration-150 cursor-pointer block">Home</Link>
+              <Link to="/products" className="text-left hover:text-white transition duration-150 cursor-pointer block">Products</Link>
+              <Link to="/projects" className="text-left hover:text-white transition duration-150 cursor-pointer block">Projects</Link>
+              <Link to="/about" className="text-left hover:text-white transition duration-150 cursor-pointer block">About Us</Link>
+              <Link to="/contact" className="text-left hover:text-white transition duration-150 cursor-pointer block">Contact</Link>
             </div>
           </div>
 
@@ -898,6 +966,28 @@ export default function App() {
                 <Phone size={14} className="text-[#A67C52] mr-2 shrink-0" />
                 <span>+91 96386 16995</span>
               </p>
+              
+              <div className="pt-2 border-t border-stone-800 space-y-1.5">
+                <span className="text-[10px] uppercase tracking-wider text-stone-500 font-bold block">Our Web Portals</span>
+                <a 
+                  href="https://officefurnitureonline.in" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-xs text-[#A67C52] hover:text-white transition flex items-center"
+                >
+                  <span>officefurnitureonline.in</span>
+                  <ExternalLink size={10} className="ml-1" />
+                </a>
+                <a 
+                  href="https://hospitalfurnitures.in" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-xs text-[#A67C52] hover:text-white transition flex items-center"
+                >
+                  <span>hospitalfurnitures.in</span>
+                  <ExternalLink size={10} className="ml-1" />
+                </a>
+              </div>
             </div>
           </div>
 
@@ -909,7 +999,7 @@ export default function App() {
           
           <div className="flex items-center space-x-4 mt-4 sm:mt-0">
             <button 
-              onClick={() => { setCurrentTab("admin"); setSelectedProduct(null); setSelectedProject(null); }} 
+              onClick={() => setCurrentTab("admin")} 
               className="hover:text-white transition duration-150 font-semibold uppercase tracking-wider flex items-center cursor-pointer"
             >
               <FileText size={11} className="mr-1 inline" /> Admin Portal

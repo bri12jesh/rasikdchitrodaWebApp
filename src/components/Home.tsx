@@ -4,6 +4,7 @@ import {
   MapPin, CheckCircle, ExternalLink, CalendarCheck, ShieldCheck 
 } from "lucide-react";
 import { Product, Project } from "../types";
+import SEO from "./SEO";
 
 interface HomeProps {
   products: Product[];
@@ -71,8 +72,48 @@ export default function Home({
     }
   ];
 
+  const localBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Rasik D Chitroda Furniture",
+    "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200",
+    "description": "Gujarat's No 1 furniture manufacturer & government tender supplier since 2016. High-strength School Benches, Hospital Furniture, and premium Office Furniture in Ahmedabad and Gandhinagar.",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "6 - Sai Industrial Estate-I, S.P. Ring Road, Nana Chiloda",
+      "addressLocality": "Ahmedabad",
+      "addressRegion": "Gujarat",
+      "postalCode": "382330",
+      "addressCountry": "IN"
+    },
+    "url": "https://officefurnitureonline.in",
+    "sameAs": [
+      "https://hospitalfurnitures.in/"
+    ],
+    "telephone": "+91-96386-16995",
+    "email": "office.rasikdchitroda@gmail.com",
+    "priceRange": "$$",
+    "openingHours": "Mo-Sa 09:00-19:00",
+    "additionalType": "https://en.wikipedia.org/wiki/Furniture",
+    "knowsAbout": [
+      "School Benches",
+      "School Furniture",
+      "Hospital Furniture",
+      "Office Furniture",
+      "Court Furniture",
+      "Laboratory Furniture",
+      "Interior Woodworking"
+    ]
+  };
+
   return (
     <div className="space-y-20 pb-20">
+      <SEO
+        title="Rasik D Chitroda Furniture | No 1 Furniture Manufacturer in Gujarat"
+        description="Rasik D Chitroda Furniture is Gujarat's premier furniture manufacturer & contractor since 2016. Specializing in durable School Benches, School Furniture, Office Furniture, Hospital Furniture & Institutional Interiors in Ahmedabad & Gandhinagar."
+        canonical="/"
+        schema={localBusinessSchema}
+      />
       
       {/* 1. HERO SECTION */}
       <div className="relative h-[640px] flex items-center justify-center overflow-hidden">
